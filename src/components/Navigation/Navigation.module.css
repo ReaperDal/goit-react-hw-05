@@ -1,8 +1,18 @@
-.Link {
-    padding: 20px 12px 20px 12px;
-    text-decoration: none; 
+.link {
+  color: #ffffff;
+
+  font-weight: bold;
+  text-decoration: none;
+
+  transition: color 0.3s;
+
+  &:hover {
+    color: #b0c4de;
+
+  }
 }
 
-.Link:hover {
-    text-decoration: underline; 
+.active {
+  color: #195570;
+
 }

@@ -1,16 +1,21 @@
-import { Bars } from "react-loader-spinner";
 
-function Loader() {
-    return (
-        <Bars
-  height="60"
-  width="60"
-  color="#4fa94d"
-  ariaLabel="bars-loading"
-  wrapperStyle={{}}
-  wrapperClass=""
-  visible={true}
-  />)
-}
+import { Audio } from 'react-loader-spinner';
+
+
+const Loader = () => {
+  return (
+    <div>
+          <Audio
+      height="80"
+      width="80"
+      radius="9"
+      color="black"
+      ariaLabel="loading"
+      wrapperStyle
+      wrapperClass
+    />
+    </div>
+  );
+};
 
 export default Loader;

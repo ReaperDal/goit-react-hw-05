@@ -1,5 +1,5 @@
 import Modal from "react-modal";
-import css from "./ImageModal.module.css"
+import styles from "./ImageModal.module.css"
 
 Modal.setAppElement("#root");
 
@@ -9,7 +9,7 @@ const ImageModal = ({ isOpen, closeModal, imgUrl, imgAlt }) => {
       isOpen={isOpen}
       onRequestClose={closeModal}
     >
-      <img className={css.imgModal} src={imgUrl} alt={imgAlt} />
+      <img className={styles.imgModal} src={imgUrl} alt={imgAlt} />
     </Modal>
   );
 };

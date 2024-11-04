@@ -1,49 +1,66 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from "react";
+import { fetchMoviesByQuery } from "../../services/api";
+import MovieList from "../../components/MovieList/MovieList";
+import styles from "./MoviesPage.module.css";
 import { useSearchParams } from "react-router-dom";
-import { fetchSearch } from '../../services/api';
-import SearchMovie from '../../components/SearchMovie/SearchMovie'
-import MovieList from '../../components/MovieList/MovieList';
-
+import Loader from "../../components/Loader/Loader";
 
 const MoviesPage = () => {
+
+  const query = searchParams.get("query") ?? "";
+  const inputRef = useRef(null);
   const [movies, setMovies] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [isLoader, setIsLoader] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const handleChangeQuery = newQuery => {
-    setSearchParams({query: newQuery})
-  }
 
-  const searchQuery = searchParams.get("query")
+  const getMovies = async (query) => {
+    try {
+      setIsError(false);
+      setIsLoader(true);
+      const data = await fetchMoviesByQuery(query);
+      setMovies(data);
+    } catch {
+      setIsError(true);
+    } finally {
+      setIsLoader(false);
+    }
+  };
 
-  useEffect(() => { 
-    if (!searchQuery) return
-    const getDeta = async () => {
-      setIsLoading(true)
-      setError(null)
-          try {
-            const data = await fetchSearch(searchQuery);
-            setMovies(data.results)            
-          } catch (error) {
-          setError(error)
-        } finally {
-          setIsLoading(false);
-        }
-        };
+  useEffect(() => {
+    if (query) {
+      getMovies(query);
+    }
+  }, [query]);
 
-        getDeta();
-    }, [searchQuery]);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const searchInput = inputRef.current.value.trim();
+    if (!searchInput) {
+      return;
+    }
+    setSearchParams({ query: searchInput });
+  };
 
   return (
     <div>
-        {isLoading && <p>Loading</p>}
-        {error && <p>404</p>}
-      <SearchMovie handleChangeQuery={handleChangeQuery} />
-      {movies.length > 0 && <MovieList movies={movies} />}
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <input
+          className={styles.input}
+          type="text"
+          ref={inputRef}
+          placeholder="Search for a movie..."
+        />
+        <button className={styles.formBtn} type="submit">
+          Search
+        </button>
+      </form>
+      {isLoader && <Loader />}
+      {isError && <p>Error 404</p>}
+      <MovieList movies={movies} />
     </div>
-  )
-}
+  );
+};
 
-export default MoviesPage
-
+export default MoviesPage;

@@ -1,38 +1,43 @@
-import React, { useEffect, useState } from 'react'
-import MovieList from '../../components/MovieList/MovieList'
-import { fetchMovie } from '../../services/api';
+import { useEffect, useState } from "react";
+import MovieList from "../../components/MovieList/MovieList";
+import { fetchMoviesDay } from "../../services/api";
+import Loader from "../../components/Loader/Loader";
 
 const HomePage = () => {
-
   const [movies, setMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
+
+  const [isLoader, setIsLoader] = useState(false);
+
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    const getAllMovies = async () => {
-      setIsLoading(true);
-      setError(null)
+    const getMoviesDay = async () => {
       try {
-        const data = await fetchMovie();
-        setMovies(data.results); 
-      } catch (error) {
-        setError(error)
-      } finally {
-        setIsLoading(false);
+        setIsError(false);
+        setIsLoader(true);
+        const data = await fetchMoviesDay();
+        setMovies(data);
+      }
+      catch {
+      setIsError(true)
+      }
+      finally {
+        setIsLoader(false)
       }
     };
-    getAllMovies();
+    getMoviesDay();
+    
   }, []);
+  return (
 
-    return (
-      <div>
-        <h2>Trending today</h2>
-        {isLoading && <p>Loading</p>}
-        {error && <p>404</p>}
-        {movies.length > 0 && <MovieList movies={movies} /> }
-      </div>
+    <div>
+      <h2>Trending today</h2>
+      {isLoader && <Loader />}
+      {isError && <p>Error 404</p>}
+      {movies.length > 0 && <MovieList movies={movies} />}
+    </div>
+    
+  );
+};
 
-  )
-}
-
-export default HomePage
+export default HomePage;

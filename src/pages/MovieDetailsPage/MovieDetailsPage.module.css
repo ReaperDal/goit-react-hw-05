@@ -1,29 +1,58 @@
-.imgPoster {
-    width: 200px;
+.link {
+  color: #a3cde1;
+
+  font-weight: bold;
+  text-decoration: none;
+
+  transition: color 0.3s;
+
+  &:hover {
+    color: #86b0c8;
+
+  }
 }
 
-.divPosterBtn {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 5px;
+.active {
+  color: #1a4e62;
+
 }
 
-.boxPage {
-    display: flex;
-    gap: 15px;
+.details {
+  display: flex;
+  padding: 20px;
+  color: #e0e0e0;
+
+  font-weight: 700;
+  background-color: #2c2c2c;
+
+  border-radius: 10px;
+
+  width: 100%;
+  gap: 25px;
 }
 
-.btn {
-    background-color: rgba(240, 248, 255, 0.674);
-    border-radius: 3px;
-    cursor: pointer;
-    text-decoration: none;
+.container {
+  display: flex;
+  background-color: #1f1f1f;
+
+  padding: 15px;
+
+  border-radius: 10px;
 }
 
-.linkNav {
-    display: flex;
-    flex-direction: column;
-    list-style-type: initial;
-    margin-left: 20px ;
+.containerinfo {
+  display: flex;
+  flex-direction: column;
+  color: #d1d1d1;
+
+}
+
+.containerBox {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  background-color: #333;
+
+  padding: 10px;
+  border-radius: 8px;
 }

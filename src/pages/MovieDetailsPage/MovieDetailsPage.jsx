@@ -1,71 +1,77 @@
-import { Suspense, useEffect, useState, useRef } from 'react';
-import { useParams, NavLink, Outlet, Link, useLocation } from 'react-router-dom';
-import { fetchMovieById } from '../../services/api';
-import css from './MovieDetailsPage.module.css';
+import { Suspense, useEffect, useRef, useState } from "react";
+import {  NavLink,  useParams,  Outlet,  Link,  useLocation} from "react-router-dom";
+import { fetchMovieById } from "../../services/api";
+import clsx from "clsx";
+import styles from "./MovieDetailsPage.module.css";
+import Loader from "../../components/Loader/Loader";
 
 const MovieDetailsPage = () => {
-    const { movieId } = useParams();
-    const [movie, setMovie] = useState(null);
-    const location = useLocation();
-    const back = useRef(location?.state ?? "/");
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState(null)
+  const buildLinkClass = ({ isActive }) => {
+    return clsx(styles.link, isActive && styles.active);
+  };
+  const { movieId } = useParams();
+  const [movie, setMovie] = useState(null);
+  const [isLoader, setIsLoader] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const location = useLocation();
+  const goBackRef = useRef(location.state);
+  useEffect(() => {
+    const getMovie = async () => {
+      try {
+        setIsError(false);
+        setIsLoader(true);
+        const data = await fetchMovieById(movieId);
+        setMovie(data);
+      } catch {
+        setIsError(true);
+      } finally {
+        setIsLoader(false);
+      }
+    };
+    getMovie();
+  }, [movieId]);
 
-    useEffect(() => {
-        const getDetails = async () => {
-            try {
-                const data = await fetchMovieById(movieId);
-                data.poster = `https://image.tmdb.org/t/p/w500/${data.poster_path}`;
-                setMovie(data);                
-            } catch (error) {
-                setError(error)
-            } finally {
-                setIsLoading(false);
-            }
+  if (!movie) return <Loader />;
 
-        };
-
-        getDetails();
-    }, [movieId]);
-
-    if (!movie) {
-        return 'Loading...'
-    }
-    return (
-        <div>
-        {isLoading && <p>Loading</p>}
-        {error && <p>404</p>}
-            <div className={css.boxPage}>
-            <div className={css.divPosterBtn}>
-            <Link className={css.btn} to={back.current} >← Go back</Link>
-            {movie && <img className={css.imgPoster} src={movie.poster} alt={movie.title} />} 
-            </div>
-
-            <div>
-                <h2>{movie ? movie.title : ''} ({movie.release_date.slice(0, 4)}) </h2>
-                <p>User score: {movie ? movie.popularity : ''}</p>
-                    <h3>Overview</h3>
-                    <p>{movie ? movie.overview : ''}</p>
-                    <h3>Genres</h3>    
-                    <p>{movie && movie.genres.length > 0 ? movie.genres.map(genre => genre.name).join(', ') : ''}</p>    
-            </div>                
-            </div>
-
-
-            <hr />
-            <p>Additional information</p>
-            <div>
-                <NavLink className={css.linkNav} to='cast' > <li>Cast</li> </NavLink>
-                <NavLink className={css.linkNav} to='reviews' > <li>Reviews </li></NavLink>                
-            </div>
-            <hr />
-            <Suspense>
-                <Outlet />
-            </Suspense>
-            
+  return (
+    <div>
+      {isLoader && <Loader />}
+      {isError && <p>Error 404</p>}
+      <div className={styles.containerBox}>
+        <Link to={goBackRef.current} className={styles.link}>
+          Go back
+        </Link>
+        <div className={styles.container}>
+          <img
+            src={`https://image.tmdb.org/t/p/w200/${movie.poster_path}`}
+            alt={movie.original_title}
+          />
+          <div className={styles.containerinfo}>
+            <h2>{movie.original_title}</h2>
+            <p>{movie.overview}</p>
+            <ul>
+              <p>Genres</p>
+              {movie.genres?.map((genre) => (
+                <li key={genre.id}>{genre.name}</li>
+              ))}
+            </ul>
+          </div>
         </div>
-    );
-}
+      </div>
+      <hr />
+      <div className={styles.details}>
+        <NavLink className={buildLinkClass} to="cast">
+          Cast
+        </NavLink>
+        <NavLink className={buildLinkClass} to="reviews">
+          Reviews
+        </NavLink>
+      </div>
+      <Suspense fallback={<Loader />}>
+        <Outlet />
+      </Suspense>
+    </div>
+  );
+};
 
 export default MovieDetailsPage;
-
